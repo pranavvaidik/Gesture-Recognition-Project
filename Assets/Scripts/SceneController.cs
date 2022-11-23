@@ -25,6 +25,8 @@ public class SceneController : MonoBehaviour
     public Camera QCam;
     public Camera SPACECam;
     public Camera XCam;
+    public Light LightSource1;
+    public Light LightSource2;
 
     List<string> fileList = new List<string>();     //necessary for grabbing human model .fbx files from file system
     public string[] humanModels;
@@ -113,6 +115,9 @@ public class SceneController : MonoBehaviour
         animatorArm = lowarm2.GetComponent<Animator>();
         animatorArm.enabled = true;             //enables the animator and applies root motion
         animatorArm.applyRootMotion = true;
+
+        LightSource1.intensity = Random.Range(0f, .7f);
+        LightSource2.intensity = Random.Range(0f, .7f);
 
         //This block is for playing ASL for Numbers animations since ChooseDataset is marked as 0
         if (ChooseDataset == 0)
@@ -489,8 +494,8 @@ public class SceneController : MonoBehaviour
             else
             {
                 float x_pos_change = Random.Range(-.25f, .25f);
-                float y_pos_change = Random.Range(-.25f, .25f);         //alterations for alphabetCam
-                float z_pos_change = Random.Range(-.25f, .25f);
+                float y_pos_change = Random.Range(-.25f, .4f);         //alterations for alphabetCam
+                float z_pos_change = Random.Range(-.25f, .4f);
                 Vector3 startingPos = new Vector3(-13.36f, 14.33f, 111f);        //alphabetCam starting position
                 alphabetCam.enabled = true;
                 alphabetCam.transform.localPosition = startingPos;      //alphabetCam location assignment/alteration
