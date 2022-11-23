@@ -24,6 +24,7 @@ public class SceneController : MonoBehaviour
     public Camera PCam;
     public Camera QCam;
     public Camera SPACECam;
+    public Camera XCam;
 
     List<string> fileList = new List<string>();     //necessary for grabbing human model .fbx files from file system
     public string[] humanModels;
@@ -42,7 +43,7 @@ public class SceneController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-         if (frameCount % 60 == 0)      //every 60 frames activate (can be changed depending on system)
+         if (frameCount % 30 == 0)      //every 30 frames activate (can be changed depending on system)
          {
              GenerateRandom();          //calls GenerateRandom function
          }
@@ -53,7 +54,7 @@ public class SceneController : MonoBehaviour
     void GetModels()
     {
         DirectoryInfo dir = new DirectoryInfo("Assets/Resources/Models");   //selects directory to grab models from
-        FileInfo[] files = dir.GetFiles("human*.fbx");   //places all files with name starting with human and ending in .fbx
+        FileInfo[] files = dir.GetFiles("mass*.fbx");   //places all files with name starting with human and ending in .fbx
                                                          //from chosen directory into a files folder
 
         foreach (FileInfo file in files)            
@@ -133,7 +134,7 @@ public class SceneController : MonoBehaviour
             PlaceCamera(randChar, 0);               //Calls PlaceCamera function to enable correct camera for image capture
             digitCounter[randNum] += 1;             //adds 1 to value at index of animation that just played
 
-            StartCoroutine(TakeDigitImage(.05f, randNum, digitCounter[randNum]));  //Takes image       
+            StartCoroutine(TakeDigitImage(.02f, randNum, digitCounter[randNum]));  //Takes image       
         
         }
         //This block is for playing ASL alphabet animations since ChooseDataset is marked as 1
@@ -164,7 +165,7 @@ public class SceneController : MonoBehaviour
             }
             int letterCount = DisplayCount(randChar);   //Calls DisplayCount to read the value of the counter for a given gesture
 
-            StartCoroutine(TakeAlphabetImage(.05f, randChar, letterCount));         //takes image
+            StartCoroutine(TakeAlphabetImage(.02f, randChar, letterCount));         //takes image
 
             //OPTIMIZATION: if maxNum images have been taken for a given gesture, we dont want to play that gesture anymore
             if (letterCount >= maxNum)              
@@ -371,6 +372,7 @@ public class SceneController : MonoBehaviour
         QCam.enabled = false;
         SPACECam.enabled = false;
         digitCam.enabled = false;
+        XCam.enabled = false;
 
         //if ASL for Numbers is being run,
         if (dataset == 0)
@@ -430,8 +432,8 @@ public class SceneController : MonoBehaviour
             //if P is chosen, use PCam
             else if (randChar == 'P')
             {
-                float x_pos_change = Random.Range(-.3f, .3f);
-                float y_pos_change = Random.Range(-.5f, .35f);           //alterations for PCam
+                float x_pos_change = Random.Range(-.25f, .25f);
+                float y_pos_change = Random.Range(-.35f, .35f);           //alterations for PCam
                 float z_pos_change = Random.Range(-.25f, .25f);
                 Vector3 startingPos = new Vector3(-12.74f, 17.15f, 111.46f);        //PCam starting position
                 PCam.enabled = true;
@@ -441,13 +443,23 @@ public class SceneController : MonoBehaviour
             //if Q is chosen, use QCam
             else if (randChar == 'Q')
             {
-                float x_pos_change = Random.Range(-.25f, .25f);
-                float y_pos_change = Random.Range(-.25f, .25f);         //alterations for QCam
-                float z_pos_change = Random.Range(-.25f, .25f);
+                float x_pos_change = Random.Range(-.2f, .2f);
+                float y_pos_change = Random.Range(-.2f, .2f);         //alterations for QCam
+                float z_pos_change = Random.Range(-.2f, .2f);
                 Vector3 startingPos = new Vector3(-12.79f, 18.36f, 109.47f);       //QCam starting position
                 QCam.enabled = true;
                 QCam.transform.localPosition = startingPos;             //QCam location assignment/alteration
                 QCam.transform.localPosition = startingPos + new Vector3(x_pos_change, y_pos_change, z_pos_change);
+            }
+            else if (randChar == 'X')
+            {
+                float x_pos_change = Random.Range(-.25f, .25f);
+                float y_pos_change = Random.Range(-.25f, .25f);         //alterations for alphabetCam
+                float z_pos_change = Random.Range(-.25f, .25f);
+                Vector3 startingPos = new Vector3(-12.85f, 14.98f, 111.46f);        //alphabetCam starting position
+                XCam.enabled = true;
+                XCam.transform.localPosition = startingPos;      //alphabetCam location assignment/alteration
+                XCam.transform.localPosition = startingPos + new Vector3(x_pos_change, y_pos_change, z_pos_change);
             }
             //slight alterations for Y since fingers sometimes are cut off screen
             //still use alphabet cam because although position changes slightly, rotation is the same
