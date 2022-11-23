@@ -8,7 +8,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignR
-  m_Speed: 100
+  m_Speed: 500
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -34,7 +34,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignX
-  m_Speed: 100
+  m_Speed: 800
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -60,7 +60,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignJ
-  m_Speed: 100
+  m_Speed: 500
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -86,7 +86,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignU
-  m_Speed: 100
+  m_Speed: 500
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -112,7 +112,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignT
-  m_Speed: 100
+  m_Speed: 500
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -138,7 +138,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignF
-  m_Speed: 100
+  m_Speed: 500
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -164,7 +164,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignI
-  m_Speed: 100
+  m_Speed: 500
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -190,7 +190,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignSPACE
-  m_Speed: 100
+  m_Speed: 500
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -216,7 +216,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignC
-  m_Speed: 100
+  m_Speed: 500
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -242,7 +242,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignW
-  m_Speed: 100
+  m_Speed: 500
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -268,7 +268,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignK
-  m_Speed: 100
+  m_Speed: 500
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -294,7 +294,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignB
-  m_Speed: 100
+  m_Speed: 500
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -320,7 +320,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignM
-  m_Speed: 100
+  m_Speed: 500
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -346,7 +346,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignV
-  m_Speed: 100
+  m_Speed: 500
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -372,7 +372,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignD
-  m_Speed: 100
+  m_Speed: 500
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -420,7 +420,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignL
-  m_Speed: 100
+  m_Speed: 500
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -446,7 +446,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignH
-  m_Speed: 100
+  m_Speed: 500
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -472,7 +472,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignP
-  m_Speed: 100
+  m_Speed: 500
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -498,7 +498,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignY
-  m_Speed: 100
+  m_Speed: 500
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -653,7 +653,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignG
-  m_Speed: 100
+  m_Speed: 500
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -679,7 +679,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignA
-  m_Speed: 100
+  m_Speed: 500
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -705,7 +705,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignQ
-  m_Speed: 100
+  m_Speed: 500
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -731,7 +731,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignO
-  m_Speed: 100
+  m_Speed: 500
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -757,7 +757,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignS
-  m_Speed: 100
+  m_Speed: 500
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -783,7 +783,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignE
-  m_Speed: 100
+  m_Speed: 500
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -809,7 +809,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignZ
-  m_Speed: 100
+  m_Speed: 500
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -835,7 +835,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SignN
-  m_Speed: 100
+  m_Speed: 500
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []

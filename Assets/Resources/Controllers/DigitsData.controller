@@ -8,7 +8,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Sign6
-  m_Speed: 50
+  m_Speed: 800
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -34,7 +34,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Sign7
-  m_Speed: 50
+  m_Speed: 800
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -60,7 +60,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Sign0
-  m_Speed: 50
+  m_Speed: 800
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -140,7 +140,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Sign4
-  m_Speed: 50
+  m_Speed: 800
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -166,7 +166,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Sign5
-  m_Speed: 50
+  m_Speed: 800
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -192,7 +192,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Sign2
-  m_Speed: 50
+  m_Speed: 800
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -218,7 +218,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Sign1
-  m_Speed: 50
+  m_Speed: 800
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -296,7 +296,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Sign9
-  m_Speed: 50
+  m_Speed: 800
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -322,7 +322,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Sign8
-  m_Speed: 50
+  m_Speed: 800
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -348,7 +348,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Sign3
-  m_Speed: 50
+  m_Speed: 800
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
