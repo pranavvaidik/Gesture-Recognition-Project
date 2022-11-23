@@ -7,6 +7,7 @@
 /SignLanguageForNumbers
 /AmericanSignLanguage
 /Build
+/Logs
 
 /.idea
 /.vs
@@ -14,3 +15,4 @@
 
 /*.csproj
 /*.sln
+/*.zip
