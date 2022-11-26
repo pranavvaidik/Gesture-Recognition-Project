@@ -17,6 +17,7 @@ public class SceneController : MonoBehaviour
     Animator animatorArm;
     public int ChooseDataset;                       //0 for ASL for Numbers , 1 for ASL for alphabet
     string st = "ABCDEFGHIJKLMNOPQRSTUVWXYZsn";     //useful in randomly choosing alphabet animations
+    string hagrid = "0123456789!@#$%^&*";
     public Camera digitCam;
     public Camera alphabetCam;
     public Camera MNCam;
@@ -25,6 +26,13 @@ public class SceneController : MonoBehaviour
     public Camera QCam;
     public Camera SPACECam;
     public Camera XCam;
+    public Camera HagridCam;
+    public Camera rockCam;
+    public Camera stopCam;
+    public Camera likeCam;
+    public Camera dislikeCam;
+    public Camera invCam;
+    public Camera callCam;
     public Light LightSource1;
     public Light LightSource2;
 
@@ -34,6 +42,7 @@ public class SceneController : MonoBehaviour
     private GameObject[] spawned;
     private int[] digitCounter = new int[11];       //these are counters to indicate when maxNum images have
     private int[] alphaCounter = new int[28];       //been recorded for each gesture 
+    private int[] hagridCounter = new int[18];
 
     // Start is called before the first frame update
     void Start()
@@ -116,6 +125,7 @@ public class SceneController : MonoBehaviour
         animatorArm.enabled = true;             //enables the animator and applies root motion
         animatorArm.applyRootMotion = true;
 
+        //for randomizing light in images
         LightSource1.intensity = Random.Range(0f, .7f);
         LightSource2.intensity = Random.Range(0f, .7f);
 
@@ -148,7 +158,7 @@ public class SceneController : MonoBehaviour
             //using st to pick random character A-Z as well as s for Space and n for Nothing
             int indexNum = Random.Range(0, st.Length);      //chooses random index of string
             char randChar = st[indexNum];               //assigns character at that chosen index to randChar variable
-            IncreaseCount(randChar);                    //Calls IncreaseCount, which keeps track of how many times each animation has played
+            IncreaseCount(randChar, ChooseDataset);                    //Calls IncreaseCount, which keeps track of how many times each animation has played
 
             //Places animation controller containing alphabet animations onto lowerarm animator component
             animatorArm.runtimeAnimatorController = (RuntimeAnimatorController)AssetDatabase.LoadAssetAtPath("Assets/Resources/Controllers/AlphabetData.controller", typeof(RuntimeAnimatorController));
@@ -168,9 +178,9 @@ public class SceneController : MonoBehaviour
             {
                 Destroy(spawned[0]);                //if nothing is chosen, delete the model from the scene
             }
-            int letterCount = DisplayCount(randChar);   //Calls DisplayCount to read the value of the counter for a given gesture
+            int letterCount = DisplayCount(randChar, ChooseDataset);   //Calls DisplayCount to read the value of the counter for a given gesture
 
-            StartCoroutine(TakeAlphabetImage(.02f, randChar, letterCount));         //takes image
+            StartCoroutine(TakeImage(.02f, randChar, letterCount, ChooseDataset));         //takes image
 
             //OPTIMIZATION: if maxNum images have been taken for a given gesture, we dont want to play that gesture anymore
             if (letterCount >= maxNum)              
@@ -180,6 +190,58 @@ public class SceneController : MonoBehaviour
                     if (st[i] == randChar)          //sift through st and once randChar is found, remove it from the string
                     {                               //so it cannot be selected again in the next updates
                         st = st.Remove(i,1);
+                    }
+                }
+            }
+        }
+        else if (ChooseDataset == 2)
+        {
+            //same strategy as alphabet dataset with an initially 18 length string that determines the played animation
+            int index = Random.Range(0, hagrid.Length);
+            char gesture = hagrid[index];
+
+            //increment counter of specific gesture
+            IncreaseCount(gesture, ChooseDataset);
+
+            //place correct animation controller on the arm (for Hagrid set)
+            animatorArm.runtimeAnimatorController = (RuntimeAnimatorController)AssetDatabase.LoadAssetAtPath("Assets/Resources/Controllers/HaGRIDContrl.controller", typeof(RuntimeAnimatorController));
+
+            //decide where to place camera
+            PlaceCamera(gesture, 2);
+
+            //plays animation determined by chosen gesture char above
+            if (gesture == '0') { animatorArm.Play("ok"); }
+            else if (gesture == '1') { animatorArm.Play("one"); }
+            else if (gesture == '2') { animatorArm.Play("twoup"); }
+            else if (gesture == '3') { animatorArm.Play("three"); }
+            else if (gesture == '4') { animatorArm.Play("four"); }
+            else if (gesture == '5') { animatorArm.Play("palm"); }
+            else if ((gesture == '6') | (gesture == '7')) { animatorArm.Play("like"); }
+            else if (gesture == '8') { animatorArm.Play("stop"); }
+            else if (gesture == '9') { animatorArm.Play("stop_inv"); }
+            else if (gesture == '!') { animatorArm.Play("peace"); }
+            else if (gesture == '@') { animatorArm.Play("peace_inv"); }
+            else if (gesture == '#') { animatorArm.Play("twoup_inv"); }
+            else if (gesture == '$') { animatorArm.Play("three2"); }
+            else if (gesture == '%') { animatorArm.Play("call"); }
+            else if (gesture == '^') { animatorArm.Play("fist"); }
+            else if (gesture == '&') { animatorArm.Play("SignD"); }
+            else if (gesture == '*') { animatorArm.Play("rock"); }
+
+            //gets counter of gesture that just played
+            int gestureCount = DisplayCount(gesture, ChooseDataset);
+
+            //takes image of played animation gesture
+            StartCoroutine(TakeImage(.05f, gesture, gestureCount, ChooseDataset));
+
+            //OPTIMIZATION: if maxNum images have been taken for a given gesture, we dont want to play that gesture anymore
+            if (gestureCount >= maxNum)
+            {
+                for (int i = 0; i < hagrid.Length; i++)
+                {
+                    if (hagrid[i] == gesture)          //sift through st and once randChar is found, remove it from the string
+                    {                               //so it cannot be selected again in the next updates
+                        hagrid = hagrid.Remove(i, 1);
                     }
                 }
             }
@@ -226,50 +288,92 @@ public class SceneController : MonoBehaviour
         }
     }
 
-    //TakeAlphabetImage screen captures what is shown in the display as determined by PlaceCamera, similar to previous
-    IEnumerator TakeAlphabetImage(float delayTime, char letter, int gestureNum)
+    //TakeImage screen captures what is shown in the display as determined by PlaceCamera, similar to previous
+    IEnumerator TakeImage(float delayTime, char letter, int gestureNum, int dataset)
     {
         int gesturesDone = 0;
         string folderPath;
         string filename = $"{gestureNum.ToString().PadLeft(5, '0')}.jpg";   //naming output file as dataset we are replicating has
         yield return new WaitForSeconds(delayTime);  //again delays so animation can play out before screen capture
-
-        //these next if-else statements decide where to store the output images depending on the character being animated
-        if (letter != 's' & letter != 'n')
+        if (dataset == 1)
         {
-            folderPath = Directory.GetCurrentDirectory() + $"/AmericanSignLanguage/Train/{letter.ToString()}";
-        }
-        else if (letter == 's')
-        {
-            folderPath = Directory.GetCurrentDirectory() + $"/AmericanSignLanguage/Train/Space";
-        }
-        else
-        {
-            folderPath = Directory.GetCurrentDirectory() + $"/AmericanSignLanguage/Train/Nothing";
-        }
-
-        //checks if gesture already has maxNum images taken of it
-        if (gestureNum <= maxNum)
-        {
-            //if not, take an image called filename and store in folderPath
-            ScreenCapture.CaptureScreenshot(System.IO.Path.Combine(folderPath, filename));
-        }
-
-        //sifts through alphaCounter to check if all gestures have maxNum images
-        foreach (int i in alphaCounter)
-        {
-            if (i >= maxNum)
+            folderPath = Directory.GetCurrentDirectory() + $"/AmericanSignLanguage/Train";
+            //these next if-else statements decide where to store the output images depending on the character being animated
+            if (letter != 's' & letter != 'n')
             {
-                gesturesDone += 1;
+                folderPath = Directory.GetCurrentDirectory() + $"/AmericanSignLanguage/Train/{letter.ToString()}";
+            }
+            else if (letter == 's')
+            {
+                folderPath = Directory.GetCurrentDirectory() + $"/AmericanSignLanguage/Train/Space";
+            }
+            else
+            {
+                folderPath = Directory.GetCurrentDirectory() + $"/AmericanSignLanguage/Train/Nothing";
+            }
+
+            //checks if gesture already has maxNum images taken of it
+            if (gestureNum <= maxNum)
+            {
+                //if not, take an image called filename and store in folderPath
+                ScreenCapture.CaptureScreenshot(System.IO.Path.Combine(folderPath, filename));
+            }
+
+            //sifts through alphaCounter to check if all gestures have maxNum images
+            foreach (int i in alphaCounter)
+            {
+                if (i >= maxNum)
+                {
+                    gesturesDone += 1;
+                }
+            }
+
+            //if all gestures have maxNum images each,
+            if (gesturesDone == 28)                 //28 for 26 letters, 1 space, 1 nothing
+            {
+                EditorApplication.isPlaying = false;        //stops Unity player
             }
         }
-
-        //if all gestures have maxNum images each,
-        if (gesturesDone == 28)                 //28 for 26 letters, 1 space, 1 nothing
+        //if dataset is 2, want to use Hagrid set 
+        else if (dataset == 2)
         {
-            EditorApplication.isPlaying = false;        //stops Unity player
+            //sets output folder path depending on chosen character
+            folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train";
+            if (letter == '0') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/ok"; }
+            else if (letter == '1') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/one"; }
+            else if (letter == '2') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/two_up"; }
+            else if (letter == '3') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/three"; }
+            else if (letter == '4') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/four"; }
+            else if (letter == '5') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/palm"; }
+            else if (letter == '6') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/like"; }
+            else if (letter == '7') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/dislike"; }
+            else if (letter == '8') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/stop"; }
+            else if (letter == '9') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/stop_inverted"; }
+            else if (letter == '!') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/peace"; }
+            else if (letter == '@') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/peace_inverted"; }
+            else if (letter == '#') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/two_up_inverted"; }
+            else if (letter == '$') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/three2"; }
+            else if (letter == '%') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/call"; }
+            else if (letter == '^') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/fist"; }
+            else if (letter == '&') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/mute"; }
+            else if (letter == '*') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/rock"; }
+            if (gestureNum <= maxNum)
+            {
+                //if not, take an image called filename and store in folderPath
+                ScreenCapture.CaptureScreenshot(System.IO.Path.Combine(folderPath, filename));
+            }
+            foreach (int i in hagridCounter)
+            {
+                if (i >= maxNum)
+                {
+                    gesturesDone += 1;          //counting amount of complete gestures
+                }
+            }
+            if (gesturesDone == 18)                 //18 total gestures need to be done (all)
+            {
+                EditorApplication.isPlaying = false;        //stops Unity player
+            }
         }
-        
     }
 
     //convertNumToWord is used for naming the output file within the TakeDigitImage coroutine
@@ -294,83 +398,139 @@ public class SceneController : MonoBehaviour
     }
 
     //IncreaseCount is necessary in PlayAnimation function to count the amount of times each gesture has been played
-    void IncreaseCount(char c)
+    void IncreaseCount(char c, int ChooseDataset)
     {
-        //each letter/space/nothing corresponds to an index in the alphaCounter, which is incremented if the randChar chosen is
-        //that letter/space/nothing
-        if (c == 'A') { alphaCounter[0] += 1; }
-        else if (c == 'B') { alphaCounter[1] += 1; }
-        else if (c == 'C') { alphaCounter[2] += 1; }
-        else if (c == 'D') { alphaCounter[3] += 1; }
-        else if (c == 'E') { alphaCounter[4] += 1; }
-        else if (c == 'F') { alphaCounter[5] += 1; }
-        else if (c == 'G') { alphaCounter[6] += 1; }
-        else if (c == 'H') { alphaCounter[7] += 1; }
-        else if (c == 'I') { alphaCounter[8] += 1; }
-        else if (c == 'J') { alphaCounter[9] += 1; }
-        else if (c == 'K') { alphaCounter[10] += 1; }
-        else if (c == 'L') { alphaCounter[11] += 1; }
-        else if (c == 'M') { alphaCounter[12] += 1; }
-        else if (c == 'N') { alphaCounter[13] += 1; }
-        else if (c == 'O') { alphaCounter[14] += 1; }
-        else if (c == 'P') { alphaCounter[15] += 1; }
-        else if (c == 'Q') { alphaCounter[16] += 1; }
-        else if (c == 'R') { alphaCounter[17] += 1; }
-        else if (c == 'S') { alphaCounter[18] += 1; }
-        else if (c == 'T') { alphaCounter[19] += 1; }
-        else if (c == 'U') { alphaCounter[20] += 1; }
-        else if (c == 'V') { alphaCounter[21] += 1; }
-        else if (c == 'W') { alphaCounter[22] += 1; }
-        else if (c == 'X') { alphaCounter[23] += 1; }
-        else if (c == 'Y') { alphaCounter[24] += 1; }
-        else if (c == 'Z') { alphaCounter[25] += 1; }
-        else if (c == 's') { alphaCounter[26] += 1; }
-        else if (c == 'n') { alphaCounter[27] += 1; }
+        if (ChooseDataset == 1)
+        {
+            //each letter/space/nothing corresponds to an index in the alphaCounter, which is incremented if the randChar chosen is
+            //that letter/space/nothing
+            if (c == 'A') { alphaCounter[0] += 1; }
+            else if (c == 'B') { alphaCounter[1] += 1; }
+            else if (c == 'C') { alphaCounter[2] += 1; }
+            else if (c == 'D') { alphaCounter[3] += 1; }
+            else if (c == 'E') { alphaCounter[4] += 1; }
+            else if (c == 'F') { alphaCounter[5] += 1; }
+            else if (c == 'G') { alphaCounter[6] += 1; }
+            else if (c == 'H') { alphaCounter[7] += 1; }
+            else if (c == 'I') { alphaCounter[8] += 1; }
+            else if (c == 'J') { alphaCounter[9] += 1; }
+            else if (c == 'K') { alphaCounter[10] += 1; }
+            else if (c == 'L') { alphaCounter[11] += 1; }
+            else if (c == 'M') { alphaCounter[12] += 1; }
+            else if (c == 'N') { alphaCounter[13] += 1; }
+            else if (c == 'O') { alphaCounter[14] += 1; }
+            else if (c == 'P') { alphaCounter[15] += 1; }
+            else if (c == 'Q') { alphaCounter[16] += 1; }
+            else if (c == 'R') { alphaCounter[17] += 1; }
+            else if (c == 'S') { alphaCounter[18] += 1; }
+            else if (c == 'T') { alphaCounter[19] += 1; }
+            else if (c == 'U') { alphaCounter[20] += 1; }
+            else if (c == 'V') { alphaCounter[21] += 1; }
+            else if (c == 'W') { alphaCounter[22] += 1; }
+            else if (c == 'X') { alphaCounter[23] += 1; }
+            else if (c == 'Y') { alphaCounter[24] += 1; }
+            else if (c == 'Z') { alphaCounter[25] += 1; }
+            else if (c == 's') { alphaCounter[26] += 1; }
+            else if (c == 'n') { alphaCounter[27] += 1; }
+        }
+        //hagrid counter increments on a specific index depending on the chosen (played) animation
+        if (ChooseDataset == 2)
+        {
+            if (c == '0') { hagridCounter[0] += 1; }
+            else if (c == '1') { hagridCounter[1] += 1; }
+            else if (c == '2') { hagridCounter[2] += 1; }
+            else if (c == '3') { hagridCounter[3] += 1; }
+            else if (c == '4') { hagridCounter[4] += 1; }
+            else if (c == '5') { hagridCounter[5] += 1; }
+            else if (c == '6') { hagridCounter[6] += 1; }
+            else if (c == '7') { hagridCounter[7] += 1; }
+            else if (c == '8') { hagridCounter[8] += 1; }
+            else if (c == '9') { hagridCounter[9] += 1; }
+            else if (c == '!') { hagridCounter[10] += 1; }
+            else if (c == '@') { hagridCounter[11] += 1; }
+            else if (c == '#') { hagridCounter[12] += 1; }
+            else if (c == '$') { hagridCounter[13] += 1; }
+            else if (c == '%') { hagridCounter[14] += 1; }
+            else if (c == '^') { hagridCounter[15] += 1; }
+            else if (c == '&') { hagridCounter[16] += 1; }
+            else if (c == '*') { hagridCounter[17] += 1; }
+        }
     }
 
     //DisplayCount is necessary in PlayAnimation to check the amount of times an animation is played
     //this is used in PlayAnimation to determine if a gesture has already reached maxNum images
-    int DisplayCount(char c)
+    int DisplayCount(char c, int ChooseDataset)
     {
-        //depending on the randChar chosen in PlayAnimation, the assigned index of alphaCounter is returned to the function call
         int value = 0;
-        if (c == 'A') { value = alphaCounter[0]; }
-        else if (c == 'B') { value = alphaCounter[1]; }
-        else if (c == 'C') { value = alphaCounter[2]; }
-        else if (c == 'D') { value = alphaCounter[3]; }
-        else if (c == 'E') { value = alphaCounter[4]; }
-        else if (c == 'F') { value = alphaCounter[5]; }
-        else if (c == 'G') { value = alphaCounter[6]; }
-        else if (c == 'H') { value = alphaCounter[7]; }
-        else if (c == 'I') { value = alphaCounter[8]; }
-        else if (c == 'J') { value = alphaCounter[9]; }
-        else if (c == 'K') { value = alphaCounter[10]; }
-        else if (c == 'L') { value = alphaCounter[11]; }
-        else if (c == 'M') { value = alphaCounter[12]; }
-        else if (c == 'N') { value = alphaCounter[13]; }
-        else if (c == 'O') { value = alphaCounter[14]; }
-        else if (c == 'P') { value = alphaCounter[15]; }
-        else if (c == 'Q') { value = alphaCounter[16]; }
-        else if (c == 'R') { value = alphaCounter[17]; }
-        else if (c == 'S') { value = alphaCounter[18]; }
-        else if (c == 'T') { value = alphaCounter[19]; }
-        else if (c == 'U') { value = alphaCounter[20]; }
-        else if (c == 'V') { value = alphaCounter[21]; }
-        else if (c == 'W') { value = alphaCounter[22]; }
-        else if (c == 'X') { value = alphaCounter[23]; }
-        else if (c == 'Y') { value = alphaCounter[24]; }
-        else if (c == 'Z') { value = alphaCounter[25]; }
-        else if (c == 's') { value = alphaCounter[26]; }
-        else if (c == 'n') { value = alphaCounter[27]; }
+        if (ChooseDataset == 1)
+        {
+            //depending on the randChar chosen in PlayAnimation, the assigned index of alphaCounter is returned to the function call
+            if (c == 'A') { value = alphaCounter[0]; }
+            else if (c == 'B') { value = alphaCounter[1]; }
+            else if (c == 'C') { value = alphaCounter[2]; }
+            else if (c == 'D') { value = alphaCounter[3]; }
+            else if (c == 'E') { value = alphaCounter[4]; }
+            else if (c == 'F') { value = alphaCounter[5]; }
+            else if (c == 'G') { value = alphaCounter[6]; }
+            else if (c == 'H') { value = alphaCounter[7]; }
+            else if (c == 'I') { value = alphaCounter[8]; }
+            else if (c == 'J') { value = alphaCounter[9]; }
+            else if (c == 'K') { value = alphaCounter[10]; }
+            else if (c == 'L') { value = alphaCounter[11]; }
+            else if (c == 'M') { value = alphaCounter[12]; }
+            else if (c == 'N') { value = alphaCounter[13]; }
+            else if (c == 'O') { value = alphaCounter[14]; }
+            else if (c == 'P') { value = alphaCounter[15]; }
+            else if (c == 'Q') { value = alphaCounter[16]; }
+            else if (c == 'R') { value = alphaCounter[17]; }
+            else if (c == 'S') { value = alphaCounter[18]; }
+            else if (c == 'T') { value = alphaCounter[19]; }
+            else if (c == 'U') { value = alphaCounter[20]; }
+            else if (c == 'V') { value = alphaCounter[21]; }
+            else if (c == 'W') { value = alphaCounter[22]; }
+            else if (c == 'X') { value = alphaCounter[23]; }
+            else if (c == 'Y') { value = alphaCounter[24]; }
+            else if (c == 'Z') { value = alphaCounter[25]; }
+            else if (c == 's') { value = alphaCounter[26]; }
+            else if (c == 'n') { value = alphaCounter[27]; }
+        }
+        //grabs value from hagrid counter to judge how many iterations a gesture has been through
+        else if (ChooseDataset == 2)
+        {
+            if (c == '0') { value = hagridCounter[0]; }
+            else if (c == '1') { value = hagridCounter[1]; }
+            else if (c == '2') { value = hagridCounter[2]; }
+            else if (c == '3') { value = hagridCounter[3]; }
+            else if (c == '4') { value = hagridCounter[4]; }
+            else if (c == '5') { value = hagridCounter[5]; }
+            else if (c == '6') { value = hagridCounter[6]; }
+            else if (c == '7') { value = hagridCounter[7]; }
+            else if (c == '8') { value = hagridCounter[8]; }
+            else if (c == '9') { value = hagridCounter[9]; }
+            else if (c == '!') { value = hagridCounter[10]; }
+            else if (c == '@') { value = hagridCounter[11]; }
+            else if (c == '#') { value = hagridCounter[12]; }
+            else if (c == '$') { value = hagridCounter[13]; }
+            else if (c == '%') { value = hagridCounter[14]; }
+            else if (c == '^') { value = hagridCounter[15]; }
+            else if (c == '&') { value = hagridCounter[16]; }
+            else if (c == '*') { value = hagridCounter[17]; }
+        }
         return value;
     }
 
     //PlaceCamera is required to enable/disable and randomly adjust camera angles for each gesture
     void PlaceCamera(char randChar, int dataset)
     {
-        //begin by disabling all cameras 
+        //begin by disabling all cameras so they do not overlap once one is turned on
         alphabetCam.enabled = false;
-
+        HagridCam.enabled = false;
+        rockCam.enabled = false;
+        stopCam.enabled = false;
+        likeCam.enabled = false;
+        dislikeCam.enabled = false;
+        invCam.enabled = false;
+        callCam.enabled = false;
         MNCam.enabled = false;
         GHCam.enabled = false;
         PCam.enabled = false;
@@ -500,6 +660,76 @@ public class SceneController : MonoBehaviour
                 alphabetCam.enabled = true;
                 alphabetCam.transform.localPosition = startingPos;      //alphabetCam location assignment/alteration
                 alphabetCam.transform.localPosition = startingPos + new Vector3(x_pos_change, y_pos_change, z_pos_change);
+            }
+        }
+        else if (dataset == 2)
+        {
+            float x_pos_change = Random.Range(-.25f, .25f);
+            float y_pos_change = Random.Range(-.25f, .25f);         //general alterations
+            float z_pos_change = Random.Range(-.25f, .25f);
+
+            //if chosen characters represent rock or three
+            if ((randChar == '3') | (randChar == '*'))
+            {
+                Vector3 startingPos = new Vector3(-13.04f, 14.35f, 110.98f);        //rockCam position placement/alteration
+                rockCam.enabled = true;
+                rockCam.transform.localPosition = startingPos;
+                rockCam.transform.localPosition = startingPos + new Vector3(x_pos_change, y_pos_change, z_pos_change);
+            }
+            //if chosen characters represent one or stop or mute
+            else if ((randChar == '1') | (randChar == '8') | (randChar == '&'))
+            {
+                Vector3 startingPos = new Vector3(-13.26f, 13.93f, 110.23f);        //stopCam position placement/alteration
+                stopCam.enabled = true;
+                stopCam.transform.localPosition = startingPos;
+                stopCam.transform.localPosition = startingPos + new Vector3(x_pos_change, y_pos_change, z_pos_change);
+            }
+            //if chosen characters represents like
+            else if (randChar == '6')
+            {
+                Vector3 startingPos = new Vector3(-15.363f, 17.318f, 107.813f);    //likeCam position placement/alteration      
+                likeCam.enabled = true;
+                likeCam.transform.localPosition = startingPos;
+                likeCam.transform.localPosition = startingPos + new Vector3(x_pos_change, y_pos_change, z_pos_change);
+            }
+            //if chosen characters represents dislike
+            else if (randChar == '7')
+            {
+                Vector3 startingPos = new Vector3(-12.13f, 14.59f, 109.9f);     //dislikeCam position placement/alteration
+                dislikeCam.enabled = true;
+                dislikeCam.transform.localPosition = startingPos;
+                dislikeCam.transform.localPosition = startingPos + new Vector3(x_pos_change, y_pos_change, z_pos_change);
+            }
+            //if chosen characters represents call
+            else if (randChar == '%')
+            {
+                Vector3 startingPos = new Vector3(-14.661f, 17.706f, 107.774f);    //callCam position placement/alteration
+                callCam.enabled = true;
+                callCam.transform.localPosition = startingPos;
+                callCam.transform.localPosition = startingPos + new Vector3(x_pos_change, y_pos_change, z_pos_change);
+            }
+            //if chosen characters represent stop_inverted, peace_inverted, or two_up_inverted
+            else if ((randChar == '9') | (randChar == '@') | (randChar == '#'))
+            {
+                float x_pos_change_inv = Random.Range(-.5f, .25f);
+                float y_pos_change_inv = Random.Range(-.7f, .65f);         //general alterations
+                float z_pos_change_inv = Random.Range(-.8f, .55f);
+                Vector3 startingPos = new Vector3(-14.99f, 18.2f, 107.33f);    //invCam position placement/alteration
+                invCam.enabled = true;
+                invCam.transform.localPosition = startingPos;
+                invCam.transform.localPosition = startingPos + new Vector3(x_pos_change_inv, y_pos_change_inv, z_pos_change_inv);
+            }
+            //if chosen characters represent any other option
+            else
+            {
+                Vector3 startingPos = new Vector3(-13.26f, 13.93f, 110.23f);
+                if (randChar == '^')
+                {
+                    startingPos = new Vector3(-13.05f, 14.06f, 110.25f);
+                }
+                HagridCam.enabled = true;
+                HagridCam.transform.localPosition = startingPos;
+                HagridCam.transform.localPosition = startingPos + new Vector3(x_pos_change, y_pos_change, z_pos_change);
             }
         }
     }
