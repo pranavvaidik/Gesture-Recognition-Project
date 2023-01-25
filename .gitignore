@@ -18,3 +18,6 @@
 /*.csproj
 /*.sln
 /*.zip
+
+/GestureRecognition/Datasets/*
+
