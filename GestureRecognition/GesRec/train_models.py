@@ -44,7 +44,7 @@ DATASETS = ["ASL_real","ASL_syn","Numbers_real","Numbers_syn"]
 
 dataset = args["dataset"]
 
-if args["dataset"] not in DATASETS():
+if args["dataset"] not in DATASETS:
 	raise AssertionError("The --dataset command line argument should in the `DATASETS` list")
 
 
