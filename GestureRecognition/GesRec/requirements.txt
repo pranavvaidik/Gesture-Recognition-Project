@@ -27,16 +27,4 @@ torch-summary==1.4.5
 torchsummary==1.5.1
 torchvision==0.8.2
 tqdm==4.50.0
-unity-scope-calculator==0.1
-unity-scope-chromiumbookmarks==0.1
-unity-scope-colourlovers==0.1
-unity-scope-devhelp==0.1
-unity-scope-firefoxbookmarks==0.1
-unity-scope-manpages==0.1
-unity-scope-openclipart==0.1
-unity-scope-texdoc==0.1
-unity-scope-tomboy==0.1
-unity-scope-virtualbox==0.1
-unity-scope-yelp==0.1
-unity-scope-zotero==0.1
 
