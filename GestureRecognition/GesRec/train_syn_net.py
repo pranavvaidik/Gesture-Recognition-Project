@@ -52,10 +52,14 @@ inputShape = (224,224)
 #if args["model"] in ("inception","xception"):
 #	inputShape = (229,229)
 
+# for each dataset:
+
+#for dataset_label in config.DATA_PATHS.keys():
+
 # construct training image generator for data augmentation
 aug = ImageDataGenerator(rotation_range = 20, zoom_range = [0.85, 1.15], width_shift_range = 0.1,
-			height_shift_range = 0.1, shear_range = 0.15, horizontal_flip = False, 
-			fill_mode = "nearest")
+		    height_shift_range = 0.1, shear_range = 0.15, horizontal_flip = False, 
+		    fill_mode = "nearest")
 
 
 # initiate preprocessors
@@ -129,18 +133,18 @@ else:
     pbar = progressbar.ProgressBar(maxval=len(trainPaths), widgets=widgets).start()
 
     for (i, path) in enumerate(trainPaths):
-	    # read and process the image
-	    image = cv2.imread(path)/255.0
-	    image = sp.preprocess(image)
-	    
-	    # then compute the mean of each channel in the image and update the lists
-	    (b,g,r) = cv2.mean(image)[:3]
-	    R.append(r)
-	    G.append(g)
-	    B.append(b)
-	    
-	    pbar.update(i)
-	    
+        # read and process the image
+        image = cv2.imread(path)/255.0
+        image = sp.preprocess(image)
+        
+        # then compute the mean of each channel in the image and update the lists
+        (b,g,r) = cv2.mean(image)[:3]
+        R.append(r)
+        G.append(g)
+        B.append(b)
+        
+        pbar.update(i)
+        
     pbar.finish()
 
     print("[INFO] serializing means...")
@@ -203,9 +207,12 @@ for model_arg in MODELS.keys():
 
     # initialize training and validation dataset generators
     #trainGen = SynDatasetGenerator(trainPaths, trainLabels, config.BATCH_SIZE, aug=aug, preprocessors=[sp, mp, iap], classes=config.NUM_CLASSES)
-    trainGen = SynDatasetGenerator(trainPaths, trainLabels, config.BATCH_SIZE, aug=None, preprocessors=[sp, mp, iap], classes=config.NUM_CLASSES)
-    valGen = SynDatasetGenerator(valPaths, valLabels, config.BATCH_SIZE, aug=None, preprocessors=[sp, mp, iap], classes=config.NUM_CLASSES)
-    #testGen = HDF5DatasetGenerator(config.VAL_HDF5, config.BATCH_SIZE, aug=None, preprocessors=[sp, mp, iap], classes=config.NUM_CLASSES)
+    #trainGen = SynDatasetGenerator(trainPaths, trainLabels, config.BATCH_SIZE, aug=None, preprocessors=[sp, mp, iap], classes=config.NUM_CLASSES)
+    #valGen = SynDatasetGenerator(valPaths, valLabels, config.BATCH_SIZE, aug=None, preprocessors=[sp, mp, iap], classes=config.NUM_CLASSES)
+    
+    trainGen = HDF5DatasetGenerator(config.TRAIN_HDF5, config.BATCH_SIZE, aug=None, preprocessors=[sp, mp, iap], classes=config.NUM_CLASSES)
+    valGen = HDF5DatasetGenerator(config.VAL_HDF5, config.BATCH_SIZE, aug=None, preprocessors=[sp, mp, iap], classes=config.NUM_CLASSES)
+    #testGen = HDF5DatasetGenerator(config.TEST_HDF5, config.BATCH_SIZE, aug=None, preprocessors=[sp, mp, iap], classes=config.NUM_CLASSES)
     
 
     for transfer_learning_flag in [True, False]:   
@@ -289,16 +296,16 @@ for model_arg in MODELS.keys():
 
 
         H = model.fit(x = trainGen.generator(), 
-		                #steps_per_epoch = valGen.numImages//config.BATCH_SIZE,
-		                steps_per_epoch = trainGen.numImages//config.BATCH_SIZE,
-		                validation_data = valGen.generator(), 
-		                validation_steps=valGen.numImages//config.BATCH_SIZE,
-		                epochs = 100,
-		                #max_queue_size = 4,
-		                class_weight = weights,
-		                callbacks=callbacks,
-		                verbose=1)					
-			                
+	                    #steps_per_epoch = valGen.numImages//config.BATCH_SIZE,
+	                    steps_per_epoch = trainGen.numImages//config.BATCH_SIZE,
+	                    validation_data = valGen.generator(), 
+	                    validation_steps=valGen.numImages//config.BATCH_SIZE,
+	                    epochs = 100,
+	                    #max_queue_size = 4,
+	                    class_weight = weights,
+	                    callbacks=callbacks,
+	                    verbose=1)					
+		                    
 
         print(H.history.keys())
 
