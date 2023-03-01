@@ -8,7 +8,7 @@ DATA_PATHS = {"ASL_real" : "output/alphabet/alphabet_real/data_paths.pkl",
               "Numbers_syn": "output/numbers/numbers_syn/data_paths.pkl"}
 
 # Assign a number of test and validation images to measure the metrics
-#NUM_CLASSES = {'alphabet': 28, 'numbers':10, 'hands':10}
+NUM_CLASSES = {'ASL_real': 28,'ASL_syn': 28, 'Numbers_real':10,'Numbers_syn':10, 'hands':10}
 #NUM_VAL_IMAGES = 1250*NUM_CLASSES # change this later
 #NUM_TEST_IMAGES = 1250*NUM_CLASSES # change this later
 
