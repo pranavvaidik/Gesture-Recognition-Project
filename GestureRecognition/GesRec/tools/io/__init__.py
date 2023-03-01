@@ -1,3 +1,4 @@
 from .hdf5datasetwriter import HDF5DatasetWriter
+from .hdf5datasetwriter_compressed import HDF5DatasetWriter_Compressed
 from .hdf5datasetgenerator import HDF5DatasetGenerator
 from .syndatagenerator import SynDatasetGenerator

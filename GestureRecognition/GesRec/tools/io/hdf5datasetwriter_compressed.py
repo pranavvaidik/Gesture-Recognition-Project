@@ -1,7 +1,7 @@
 import h5py
 import os
 
-class HDF5DatasetWriter:
+class HDF5DatasetWriter_Compressed:
 	def __init__(self, dims, outPath, dataKey = "images", bufSize = 1000):
 		# check if output path exists, and if so, raise an exception
 		if os.path.exists(outPath):
@@ -11,7 +11,7 @@ class HDF5DatasetWriter:
 		# open HDF5 database to write and create 2 datasets:
 		# one to store images, other for class labels
 		self.db = h5py.File(outPath, "w")
-		self.data = self.db.create_dataset(dataKey, dims, dtype="int", compression="gzip")
+		self.data = self.db.create_dataset(dataKey, dims, dtype="int")
 		self.labels = self.db.create_dataset("labels",(dims[0],), dtype="int")
 		
 		# store the buffer size, then initialize the buffer along with
