@@ -120,9 +120,9 @@ for model_arg in MODELS.keys():
     
     for augmentation_flag in [True, False]: 
     
-        trainGen = HDF5DatasetGenerator(config.TRAIN_HDF5[dataset], config.BATCH_SIZE, aug=Aug_dict[augmentation_flag], preprocessors=[sp, mp, iap], classes=config.NUM_CLASSES)
-        valGen = HDF5DatasetGenerator(config.VAL_HDF5[dataset], config.BATCH_SIZE, aug=Aug_dict[augmentation_flag], preprocessors=[sp, mp, iap], classes=config.NUM_CLASSES)
-        testGen = HDF5DatasetGenerator(config.TEST_HDF5[dataset], config.BATCH_SIZE, aug=Aug_dict[augmentation_flag], preprocessors=[sp, mp, iap], classes=config.NUM_CLASSES)
+        trainGen = HDF5DatasetGenerator(config.TRAIN_HDF5[dataset], config.BATCH_SIZE, aug=Aug_dict[augmentation_flag], preprocessors=[sp, mp, iap], classes=config.NUM_CLASSES[dataset])
+        valGen = HDF5DatasetGenerator(config.VAL_HDF5[dataset], config.BATCH_SIZE, aug=Aug_dict[augmentation_flag], preprocessors=[sp, mp, iap], classes=config.NUM_CLASSES[dataset])
+        testGen = HDF5DatasetGenerator(config.TEST_HDF5[dataset], config.BATCH_SIZE, aug=Aug_dict[augmentation_flag], preprocessors=[sp, mp, iap], classes=config.NUM_CLASSES[dataset])
         
 
         for transfer_learning_flag in [True, False]:   
