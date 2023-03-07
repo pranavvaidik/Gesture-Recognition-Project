@@ -18,6 +18,7 @@
 /*.csproj
 /*.sln
 /*.zip
+/*.pyc
 
 /GestureRecognition/Datasets/
 
