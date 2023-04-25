@@ -82,9 +82,13 @@ public class SceneController : MonoBehaviour
     //GetModels inputs all created MakeHuman models into an array for GenerateRandom to use
     void GetModels()
     {
-        DirectoryInfo dir = new DirectoryInfo("Assets/Resources/Models/HANDSv2_Models/" + HANDsModel + "/");   //selects directory to grab models from (HANDSv2 CHOOSE MODEL NUMBER)
-        FileInfo[] files = dir.GetFiles("mass*.prefab");   //places all files with name starting with human and ending in .fbx
-                                                         //from chosen directory into a files folder
+        DirectoryInfo dir = new DirectoryInfo("Assets/Resources/Models/");   //selects directory to grab models from
+        FileInfo[] files = dir.GetFiles("mass*.fbx");   //places all files with name starting with human and ending in .fbx from chosen directory into a files folder
+        if (ChooseDataset == 3)
+        {
+            dir = new DirectoryInfo("Assets/Resources/Models/HANDSv2_Models/" + HANDsModel + "/");   //selects directory to grab models from (HANDSv2 CHOOSE MODEL NUMBER)
+            files = dir.GetFiles("mass*.prefab");
+        }
         
         foreach (FileInfo file in files)            
         {
@@ -103,7 +107,11 @@ public class SceneController : MonoBehaviour
             Destroy(spawned[0]);        //if there is, delete it before placing a new one
         }
         int HumanIndex = Random.Range(0, humanModels.Length);       //selects random index of human model array
-        string filename = $"Models/HANDSv2_Models/Model5/{humanModels[HumanIndex]}";      //gets human model filename depending on randomly chosen index
+        string filename = $"Models/{humanModels[HumanIndex]}";      //gets human model filename depending on randomly chosen index
+        if (ChooseDataset == 3)
+        {
+            filename = $"Models/HANDSv2_Models/Model1/{humanModels[HumanIndex]}";      //MUST CHANGE FOR HANDSv2 MODEL USEAGE
+        }
         GameObject spawnedModel = Instantiate(Resources.Load<GameObject>(filename));    //places chosen model in scene
         spawned[0] = spawnedModel;      //indicates a new model is spawned
         PlayAnimation(spawnedModel);    //Calls PlayAnimation function

@@ -1546,8 +1546,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5f4ef8e25098a94b84c1e51aebe154f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxNum: 2000
-  ChooseDataset: 3
+  maxNum: 5
+  ChooseDataset: 2
   HANDsCam: {fileID: 2005834162}
   HANDsv2Cam: {fileID: 720422521}
   digitCam: {fileID: 496200903}
@@ -1567,7 +1567,7 @@ MonoBehaviour:
   callCam: {fileID: 513465174}
   LightSource1: {fileID: 819660221}
   LightSource2: {fileID: 864916011}
-  HANDsModel: Model5
+  HANDsModel: Model1
   humanModels: []
 --- !u!4 &1202994668
 Transform:

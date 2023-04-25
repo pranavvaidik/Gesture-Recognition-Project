@@ -224,7 +224,7 @@ public class AutomateMove : MonoBehaviour
                 }
             }
         }
-        DirectoryInfo dir = new DirectoryInfo("Assets/NewAssets/Resources/Models/PrefabModels");       //selects directory to grab models from
+        DirectoryInfo dir = new DirectoryInfo("Assets/Resources/Models/PrefabModels");       //selects directory to grab models from
         FileInfo[] files = dir.GetFiles("mass*.prefab");                            //places all files with name starting with mass and ending in .prefab
                                                                                     //from chosen directory into a files folder
         foreach (FileInfo file in files)
