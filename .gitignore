@@ -8,6 +8,7 @@
 /AmericanSignLanguage
 /Hagrid
 /HANDS
+/HANDSv2
 /Build
 /Logs
 
@@ -20,6 +21,6 @@
 /*.sln
 /*.zip
 /*.pyc
-
+/*.log
 /GestureRecognition/Datasets/
 

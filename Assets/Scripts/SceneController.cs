@@ -9,23 +9,27 @@ using UnityEngine;
 
 public class SceneController : MonoBehaviour
 {
-    //each of these are declarations that are necessary for future actions in the code
+    //each of these are declarations that are necessary for future actions in the code. All public variables are able to be manipulated by user.
     private int frameCount = 0;
     public int maxNum;
 
     Animator animatorBody;
     Animator animatorArm;
-    public int ChooseDataset;                       //0 for ASL for Numbers , 1 for ASL for alphabet
-    string st = "ABCDEFGHIJKLMNOPQRSTUVWXYZsn";     //useful in randomly choosing alphabet animations
+    public int ChooseDataset;                       //0 for ASL for Numbers , 1 for ASL for alphabet, 2 for HaGRID
+    string nums = "0123456789u";
+    string st = "ABCDEFGHIJKLMNOPQRSTUVWXYZsn";     //strings for choice of dataset specific animations
     string hagrid = "0123456789!@#$%^&*";
+    string HANDs = "123456789SP";                   //without Horiz for v2
+    public Camera HANDsCam;
+    public Camera HANDsv2Cam;
     public Camera digitCam;
     public Camera alphabetCam;
     public Camera MNCam;
     public Camera GHCam;                    //Camera declarations for enable/disable and placement later
     public Camera PCam;
     public Camera QCam;
-    public Camera SPACECam;
     public Camera XCam;
+    public Camera SPACECam;
     public Camera HagridCam;
     public Camera rockCam;
     public Camera stopCam;
@@ -33,8 +37,9 @@ public class SceneController : MonoBehaviour
     public Camera dislikeCam;
     public Camera invCam;
     public Camera callCam;
-    public Light LightSource1;
+    public Light LightSource1;                  //lighting declarations for altering intensity later
     public Light LightSource2;
+    public string HANDsModel;
 
     List<string> fileList = new List<string>();     //necessary for grabbing human model .fbx files from file system
     public string[] humanModels;
@@ -43,10 +48,23 @@ public class SceneController : MonoBehaviour
     private int[] digitCounter = new int[11];       //these are counters to indicate when maxNum images have
     private int[] alphaCounter = new int[28];       //been recorded for each gesture 
     private int[] hagridCounter = new int[18];
+    private int[] HANDsCounter = new int[11];       //11 without Horiz for v2
 
     // Start is called before the first frame update
     void Start()
     {
+        //edge cases of user inputs. ChooseDataset must be 0, 1, or 2. If not, write in console error message and quit Unity run
+        if ((ChooseDataset > 3) | (ChooseDataset < 0))
+        {
+            Debug.Log("Invalid Dataset Choice. Select 0 for ASL Numbers replication or 1 for ASL Letters.");
+            EditorApplication.isPlaying = false;        //stops Unity player
+        }
+        //maxNum must be positive
+        if (maxNum < 0)
+        {
+            Debug.Log("Invalid maxNum Choice. Choose a positive integer.");
+            EditorApplication.isPlaying = false;        //stops Unity player
+        }
         GetModels();                        //on start, call GetModels function
         spawned = new GameObject[1];        //indicate that spawned array contains a model now
     }
@@ -54,7 +72,7 @@ public class SceneController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-         if (frameCount % 30 == 0)      //every 30 frames activate (can be changed depending on system)
+         if (frameCount % 50 == 0)      //every 50 frames, activate (my home computer uses 50 frames but powerful lab computer uses 30 frames for complete set generation)
          {
              GenerateRandom();          //calls GenerateRandom function
          }
@@ -64,16 +82,16 @@ public class SceneController : MonoBehaviour
     //GetModels inputs all created MakeHuman models into an array for GenerateRandom to use
     void GetModels()
     {
-        DirectoryInfo dir = new DirectoryInfo("Assets/Resources/Models");   //selects directory to grab models from
-        FileInfo[] files = dir.GetFiles("mass*.fbx");   //places all files with name starting with human and ending in .fbx
+        DirectoryInfo dir = new DirectoryInfo("Assets/Resources/Models/HANDSv2_Models/" + HANDsModel + "/");   //selects directory to grab models from (HANDSv2 CHOOSE MODEL NUMBER)
+        FileInfo[] files = dir.GetFiles("mass*.prefab");   //places all files with name starting with human and ending in .fbx
                                                          //from chosen directory into a files folder
-
+        
         foreach (FileInfo file in files)            
         {
             string name = file.Name.Split('.')[0];      //for each file, disconnect the .fbx from the name
             fileList.Add(name);                         //and add the model name into the list of file names
         }
-
+        
         humanModels = fileList.ToArray();           //translates file of models into GameObject Array for use
     }
 
@@ -85,11 +103,10 @@ public class SceneController : MonoBehaviour
             Destroy(spawned[0]);        //if there is, delete it before placing a new one
         }
         int HumanIndex = Random.Range(0, humanModels.Length);       //selects random index of human model array
-        string filename = $"Models/{humanModels[HumanIndex]}";      //gets human model filename depending on randomly chosen index
+        string filename = $"Models/HANDSv2_Models/Model5/{humanModels[HumanIndex]}";      //gets human model filename depending on randomly chosen index
         GameObject spawnedModel = Instantiate(Resources.Load<GameObject>(filename));    //places chosen model in scene
         spawned[0] = spawnedModel;      //indicates a new model is spawned
         PlayAnimation(spawnedModel);    //Calls PlayAnimation function
-        //synth.OnSceneChange();
     }
 
     //PlayAnimation places animator component on the spawned model's lowerarm then places the correct animation controller
@@ -125,39 +142,54 @@ public class SceneController : MonoBehaviour
         animatorArm.enabled = true;             //enables the animator and applies root motion
         animatorArm.applyRootMotion = true;
 
-        //for randomizing light in images
-        LightSource1.intensity = Random.Range(0f, .7f);
-        LightSource2.intensity = Random.Range(0f, .7f);
+        //randomization of light source conditions
+        LightSource1.intensity = Random.Range(.2f, .7f);
+        LightSource2.intensity = Random.Range(.2f, .7f);
 
         //This block is for playing ASL for Numbers animations since ChooseDataset is marked as 0
         if (ChooseDataset == 0)
         {
             //Places animation controller fit with ASL number animations into arm animator component
             animatorArm.runtimeAnimatorController = (RuntimeAnimatorController)AssetDatabase.LoadAssetAtPath("Assets/Resources/Controllers/DigitsData.controller", typeof(RuntimeAnimatorController));
-            
-            //chooses random value 0-10 for random determination of animation to play
-            int randNum = Random.Range(0, 11);
-            if (randNum < 10)                                       //if the number is less than 10,
-            {
-                animatorArm.Play("Sign" + randNum.ToString());      //the index means exactly the animation to play
+
+            //chooses random index within string of animation choices for determination of gesture to play
+            int indexNum = Random.Range(0, nums.Length);
+            char randChar = nums[indexNum];                         //character at the string index corresponds to the gesture chosen
+            int randNum;
+            if (randChar != 'u')                            //if the character chosen isn't 'u', they are just gestures 0-9
+            {   
+                randNum = randChar - '0';                           //changing character into integer
+                animatorArm.Play("Sign" + randNum.ToString());      //plays animation clip labeled Sign + randomly chosen character
             }
-            else
+            else                            //if the chosen character is 'u'
             {
-                Destroy(spawned[0]);     //if 10 is chosen, we want to show "nothing" so we delete the model before taking image
+                randNum = 10;            //number is valued as 10 since the index location of unknown in the number counter is 10
+                Destroy(spawned[0]);     //if unknown is chosen, we want to show only background images so we delete the model before taking image
             }
-            char randChar = (char)randNum;          //for Camera placement useage
             PlaceCamera(randChar, 0);               //Calls PlaceCamera function to enable correct camera for image capture
             digitCounter[randNum] += 1;             //adds 1 to value at index of animation that just played
 
-            StartCoroutine(TakeDigitImage(.02f, randNum, digitCounter[randNum]));  //Takes image       
-        
+            StartCoroutine(TakeImage(.02f, randChar, digitCounter[randNum], 0));  //Takes image       
+
+            // if the animation reaches the maximum number of plays chosen by the user, remove it from string of choices
+            if (digitCounter[randNum] >= maxNum)
+            {
+                for (int i = 0; i < nums.Length; i++)
+                {
+                    if (nums[i] == randChar)          //sift through nums and once randChar is found, remove it from the string
+                    {                               //so it cannot be selected again in the next updates
+                        nums = nums.Remove(i, 1);
+                    }
+                }
+            }
         }
         //This block is for playing ASL alphabet animations since ChooseDataset is marked as 1
         else if (ChooseDataset == 1)
         {
-            //using st to pick random character A-Z as well as s for Space and n for Nothing
+            //using st to pick random character A-Z as well as s for Space and n for Nothing)
             int indexNum = Random.Range(0, st.Length);      //chooses random index of string
             char randChar = st[indexNum];               //assigns character at that chosen index to randChar variable
+            
             IncreaseCount(randChar, ChooseDataset);                    //Calls IncreaseCount, which keeps track of how many times each animation has played
 
             //Places animation controller containing alphabet animations onto lowerarm animator component
@@ -179,6 +211,7 @@ public class SceneController : MonoBehaviour
                 Destroy(spawned[0]);                //if nothing is chosen, delete the model from the scene
             }
             int letterCount = DisplayCount(randChar, ChooseDataset);   //Calls DisplayCount to read the value of the counter for a given gesture
+            //Debug.Log("Performed " + randChar + ": iteration " + letterCount);
 
             StartCoroutine(TakeImage(.02f, randChar, letterCount, ChooseDataset));         //takes image
 
@@ -190,36 +223,37 @@ public class SceneController : MonoBehaviour
                     if (st[i] == randChar)          //sift through st and once randChar is found, remove it from the string
                     {                               //so it cannot be selected again in the next updates
                         st = st.Remove(i,1);
+                        //Debug.Log(randChar + " has been removed: reached " + maxNum.ToString() + " number of performances. New string of choices: " + st);
                     }
                 }
             }
         }
+        
+        //Hagrid dataset chosen for generation
         else if (ChooseDataset == 2)
         {
-            //same strategy as alphabet dataset with an initially 18 length string that determines the played animation
+            //chooses random index that corresponds to a character representing a gesture in the HAGRID dataset
             int index = Random.Range(0, hagrid.Length);
             char gesture = hagrid[index];
 
-            //increment counter of specific gesture
+            //increases index value by 1 of animation clip that is selected
             IncreaseCount(gesture, ChooseDataset);
 
-            //place correct animation controller on the arm (for Hagrid set)
+            //place correct hagrid controller on model arm
             animatorArm.runtimeAnimatorController = (RuntimeAnimatorController)AssetDatabase.LoadAssetAtPath("Assets/Resources/Controllers/HaGRIDContrl.controller", typeof(RuntimeAnimatorController));
 
-            //decide where to place camera
-            PlaceCamera(gesture, 2);
+            PlaceCamera(gesture, 2);    //place camera in correct location depending on gesture chosen and dataset
 
-            //plays animation determined by chosen gesture char above
             if (gesture == '0') { animatorArm.Play("ok"); }
             else if (gesture == '1') { animatorArm.Play("one"); }
             else if (gesture == '2') { animatorArm.Play("twoup"); }
             else if (gesture == '3') { animatorArm.Play("three"); }
             else if (gesture == '4') { animatorArm.Play("four"); }
-            else if (gesture == '5') { animatorArm.Play("palm"); }
-            else if ((gesture == '6') | (gesture == '7')) { animatorArm.Play("like"); }
-            else if (gesture == '8') { animatorArm.Play("stop"); }
+            else if (gesture == '5') { animatorArm.Play("palm"); }  
+            else if ((gesture == '6') | (gesture == '7')) { animatorArm.Play("like"); }         //definitions of the gesture that each character within string of
+            else if (gesture == '8') { animatorArm.Play("stop"); }                              //possible choices represent
             else if (gesture == '9') { animatorArm.Play("stop_inv"); }
-            else if (gesture == '!') { animatorArm.Play("peace"); }
+            else if (gesture == '!') { animatorArm.Play("peace"); }                             //depending on the chosen character, run distinct animation
             else if (gesture == '@') { animatorArm.Play("peace_inv"); }
             else if (gesture == '#') { animatorArm.Play("twoup_inv"); }
             else if (gesture == '$') { animatorArm.Play("three2"); }
@@ -228,159 +262,174 @@ public class SceneController : MonoBehaviour
             else if (gesture == '&') { animatorArm.Play("SignD"); }
             else if (gesture == '*') { animatorArm.Play("rock"); }
 
-            //gets counter of gesture that just played
-            int gestureCount = DisplayCount(gesture, ChooseDataset);
+            int gestureCount = DisplayCount(gesture, ChooseDataset);        //read back the amount of times a gesture has been played
 
-            //takes image of played animation gesture
-            StartCoroutine(TakeImage(.05f, gesture, gestureCount, ChooseDataset));
+            StartCoroutine(TakeImage(.02f, gesture, gestureCount, ChooseDataset));   //take image
 
             //OPTIMIZATION: if maxNum images have been taken for a given gesture, we dont want to play that gesture anymore
             if (gestureCount >= maxNum)
             {
                 for (int i = 0; i < hagrid.Length; i++)
                 {
-                    if (hagrid[i] == gesture)          //sift through st and once randChar is found, remove it from the string
-                    {                               //so it cannot be selected again in the next updates
+                    if (hagrid[i] == gesture)               //sift through hagrid string of choices and once randChar is found, remove it from the string
+                    {                                       //so it cannot be selected again in the next updates
                         hagrid = hagrid.Remove(i, 1);
+                    }
+                }
+            }
+        }
+
+        else if (ChooseDataset == 3)
+        {
+            int index = Random.Range(0, HANDs.Length);
+            char gesture = HANDs[index];
+            IncreaseCount(gesture, ChooseDataset);
+
+            //place correct hagrid controller on model arm
+            animatorArm.runtimeAnimatorController = (RuntimeAnimatorController)AssetDatabase.LoadAssetAtPath("Assets/Resources/Controllers/HANDsController.controller", typeof(RuntimeAnimatorController));
+            PlaceCamera(gesture, 3);
+            if (gesture == '1') { animatorArm.Play("1"); }
+            else if (gesture == '2') { animatorArm.Play("2"); }
+            else if (gesture == '3') { animatorArm.Play("3"); }
+            else if (gesture == '4') { animatorArm.Play("4"); }
+            else if (gesture == '5') { animatorArm.Play("5"); }         //definitions of the gesture that each character within string of
+            else if (gesture == '6') { animatorArm.Play("6"); }
+            else if (gesture == '7') { animatorArm.Play("7"); }                              //possible choices represent
+            else if (gesture == '8') { animatorArm.Play("8"); }
+            else if (gesture == '9') { animatorArm.Play("9"); }                             //depending on the chosen character, run distinct animation
+            else if (gesture == 'S') { animatorArm.Play("Span"); }
+            else if (gesture == 'P') { animatorArm.Play("punch"); }
+
+            int gestureCount = DisplayCount(gesture, ChooseDataset);        //read back the amount of times a gesture has been played
+
+            StartCoroutine(TakeImage(.02f, gesture, gestureCount, ChooseDataset));   //take image
+
+            //OPTIMIZATION: if maxNum images have been taken for a given gesture, we dont want to play that gesture anymore
+            if (gestureCount >= maxNum)
+            {
+                for (int i = 0; i < HANDs.Length; i++)
+                {
+                    if (HANDs[i] == gesture)               //sift through HANDs string of choices and once gesture characterr is found, remove it from the string
+                    {                                       //so it cannot be selected again in the next updates
+                        HANDs = HANDs.Remove(i, 1);
                     }
                 }
             }
         }
     }
 
-    //TakeDigitImage screen captures what is shown in the display as determined by PlaceCamera
-    IEnumerator TakeDigitImage(float delayTime, int value, int gestureNum)
+    //TakeAlphabetImage screen captures what is shown in the display as determined by PlaceCamera, similar to previous
+    IEnumerator TakeImage(float delayTime, char character, int gestureNum, int dataset)
     {
         int gesturesDone = 0;
         string folderPath;
-        string number = convertNumToWord(value);    //calls convertNumToWord to name the file as the dataset we are replicating did
-        string filename = $"{number}_{gestureNum.ToString().PadLeft(5, '0')}.jpg"; //names the output file
-        yield return new WaitForSeconds(delayTime);     //needs to delay so animation can fully occur before image is taken
+        string filename;                //declarations for future assignment depending on dataset being replicated
+        int numGestures;
+        int[] counter;
+        yield return new WaitForSeconds(delayTime);    //again delays so animation can play out completely before screen capture
 
-        if (value < 10)         //value is the randomly generated number 0-10. if 0-9, 0-9 animation is played
-        {                                                   //so animation must be placed in the correct folder 0-9
-            folderPath = Directory.GetCurrentDirectory() + $"/SignLanguageForNumbers/Train/{value.ToString()}";
-        }
-        else                    //if 10 is chosen, "nothing" is happening so we choose the folder path to be in unknown
+        //determination of variables depending on the dataset chosen
+        if (dataset == 0)
         {
-            folderPath = Directory.GetCurrentDirectory() + $"/SignLanguageForNumbers/Train/unknown";
+            counter = digitCounter;     //use digitCounter for later loop to check whether all gestures have been recorded maxnum times
+            numGestures = 11;                                                   //selects max number of gestures to complete as 11 since Numbers dataset has 11 total gestures
+            string number = convertNumToWord(character);                                //calls convertNumToWord to name the file as the dataset we are replicating did
+            filename = $"{number}_{gestureNum.ToString().PadLeft(5, '0')}.jpg";         //names the output file
+            if (character != 'u')         
+            {                                                   
+                folderPath = Directory.GetCurrentDirectory() + $"/SignLanguageForNumbers/Train/{character.ToString()}";   //if not 'u', folder is just labeled 0-9
+            }
+            else                    
+            {
+                folderPath = Directory.GetCurrentDirectory() + $"/SignLanguageForNumbers/Train/unknown";  //if is 'u', folder called unknown
+            }
         }
-
-        //checks if number of gestures has exceeded maxNum wanted
-        if (gestureNum <= maxNum)
+        else if (dataset == 1)
         {
-            //if it hasn't, take a screenshot named filename and place in folderPath
-            ScreenCapture.CaptureScreenshot(System.IO.Path.Combine(folderPath, filename));     
-        }
+            counter = alphaCounter;    //selects alphaCounter as counter to use later
+            numGestures = 28;               //alphabet dataset has 28 total gestures
+            filename = $"{gestureNum.ToString().PadLeft(5, '0')}.jpg";                        //naming output file as dataset we are replicating has
+            folderPath = Directory.GetCurrentDirectory() + $"/AmericanSignLanguage/Train";    
 
-        //sifts through digitCounter to determine if all gestures are complete
-        foreach (int i in digitCounter)
+            if (character != 's' & character != 'n')
+            {
+                folderPath = Directory.GetCurrentDirectory() + $"/AmericanSignLanguage/Train/{character.ToString()}";  //if not Space or Nothing, just A-Z folder labels
+            }
+            else if (character == 's')
+            {
+                folderPath = Directory.GetCurrentDirectory() + $"/AmericanSignLanguage/Train/Space";   //place in Space folder
+            }
+            else
+            {
+                folderPath = Directory.GetCurrentDirectory() + $"/AmericanSignLanguage/Train/Nothing";   //output path as Nothing folder
+            }
+        }
+        else if (dataset == 2)
+        {
+            folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train";
+            filename = $"{gestureNum.ToString().PadLeft(5, '0')}.jpg";   //naming output file as dataset we are replicating has
+            numGestures = 18;  //hagrid set has 18 total gestures
+            counter = hagridCounter;        //use hagridCounter in future
+
+            if (character == '0') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/ok"; }
+            else if (character == '1') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/one"; }
+            else if (character == '2') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/two_up"; }
+            else if (character == '3') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/three"; }
+            else if (character == '4') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/four"; }        //depending on chosen character, place in correct folder
+            else if (character == '5') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/palm"; }        //following definitions provided earlier
+            else if (character == '6') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/like"; }
+            else if (character == '7') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/dislike"; }
+            else if (character == '8') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/stop"; }
+            else if (character == '9') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/stop_inverted"; }
+            else if (character == '!') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/peace"; }
+            else if (character == '@') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/peace_inverted"; }
+            else if (character == '#') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/two_up_inverted"; }
+            else if (character == '$') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/three2"; }
+            else if (character == '%') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/call"; }
+            else if (character == '^') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/fist"; }
+            else if (character == '&') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/mute"; }
+            else if (character == '*') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/rock"; }
+        }
+        else
+        {
+            folderPath = Directory.GetCurrentDirectory() + $"/HANDSv2/" + HANDsModel + "/";
+            filename = $"{gestureNum.ToString().PadLeft(5, '0')}.jpg";   //naming output file as dataset we are replicating has
+            numGestures = 11;  //hands set has 12 total gestures - 11 without Horiz for v2
+            counter = HANDsCounter;        //use HANDsCounter in future
+
+            if (character == '1') { folderPath = Directory.GetCurrentDirectory() + $"/HANDSv2/" + HANDsModel + "/One_VFR"; }
+            else if (character == '2') { folderPath = Directory.GetCurrentDirectory() + $"/HANDSv2/" + HANDsModel + "/Two_VFR"; }
+            else if (character == '3') { folderPath = Directory.GetCurrentDirectory() + $"/HANDSv2/" + HANDsModel + "/Three_VFR"; }
+            else if (character == '4') { folderPath = Directory.GetCurrentDirectory() + $"/HANDSv2/" + HANDsModel + "/Four_VFR"; }
+            else if (character == '5') { folderPath = Directory.GetCurrentDirectory() + $"/HANDSv2/" + HANDsModel + "/Five_VFR"; }
+            else if (character == '6') { folderPath = Directory.GetCurrentDirectory() + $"/HANDSv2/" + HANDsModel + "/Six_VFR"; }
+            else if (character == '7') { folderPath = Directory.GetCurrentDirectory() + $"/HANDSv2/" + HANDsModel + "/Seven_VFR"; }
+            else if (character == '8') { folderPath = Directory.GetCurrentDirectory() + $"/HANDSv2/" + HANDsModel + "/Eight_VFR"; }        //depending on chosen character, place in correct folder
+            else if (character == '9') { folderPath = Directory.GetCurrentDirectory() + $"/HANDSv2/" + HANDsModel + "/Nine_VFR"; }        //following definitions provided earlier
+            else if (character == 'S') { folderPath = Directory.GetCurrentDirectory() + $"/HANDSv2/" + HANDsModel + "/Span_VFR"; }
+            else if (character == 'P') { folderPath = Directory.GetCurrentDirectory() + $"/HANDSv2/" + HANDsModel + "/Punch_VFR"; }
+        }
+        ScreenCapture.CaptureScreenshot(System.IO.Path.Combine(folderPath, filename));      //take a screenshot with output path and filename determined above
+
+        foreach (int i in counter)
         {
             if (i >= maxNum)
             {
-                gesturesDone += 1;
+                gesturesDone += 1;          //uses the counter set above to check how many gestures have reached maximum number of plays
             }
         }
-        //if all gestures are complete with maxNum pictures for each,
-        if (gesturesDone == 11)                 
+        if (gesturesDone == numGestures)                    //if the number of completed gestures matches total number of gestures in the dataset,
         {
             EditorApplication.isPlaying = false;        //stops Unity player
         }
     }
 
-    //TakeImage screen captures what is shown in the display as determined by PlaceCamera, similar to previous
-    IEnumerator TakeImage(float delayTime, char letter, int gestureNum, int dataset)
-    {
-        int gesturesDone = 0;
-        string folderPath;
-        string filename = $"{gestureNum.ToString().PadLeft(5, '0')}.jpg";   //naming output file as dataset we are replicating has
-        yield return new WaitForSeconds(delayTime);  //again delays so animation can play out before screen capture
-        if (dataset == 1)
-        {
-            folderPath = Directory.GetCurrentDirectory() + $"/AmericanSignLanguage/Train";
-            //these next if-else statements decide where to store the output images depending on the character being animated
-            if (letter != 's' & letter != 'n')
-            {
-                folderPath = Directory.GetCurrentDirectory() + $"/AmericanSignLanguage/Train/{letter.ToString()}";
-            }
-            else if (letter == 's')
-            {
-                folderPath = Directory.GetCurrentDirectory() + $"/AmericanSignLanguage/Train/Space";
-            }
-            else
-            {
-                folderPath = Directory.GetCurrentDirectory() + $"/AmericanSignLanguage/Train/Nothing";
-            }
-
-            //checks if gesture already has maxNum images taken of it
-            if (gestureNum <= maxNum)
-            {
-                //if not, take an image called filename and store in folderPath
-                ScreenCapture.CaptureScreenshot(System.IO.Path.Combine(folderPath, filename));
-            }
-
-            //sifts through alphaCounter to check if all gestures have maxNum images
-            foreach (int i in alphaCounter)
-            {
-                if (i >= maxNum)
-                {
-                    gesturesDone += 1;
-                }
-            }
-
-            //if all gestures have maxNum images each,
-            if (gesturesDone == 28)                 //28 for 26 letters, 1 space, 1 nothing
-            {
-                EditorApplication.isPlaying = false;        //stops Unity player
-            }
-        }
-        //if dataset is 2, want to use Hagrid set 
-        else if (dataset == 2)
-        {
-            //sets output folder path depending on chosen character
-            folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train";
-            if (letter == '0') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/ok"; }
-            else if (letter == '1') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/one"; }
-            else if (letter == '2') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/two_up"; }
-            else if (letter == '3') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/three"; }
-            else if (letter == '4') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/four"; }
-            else if (letter == '5') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/palm"; }
-            else if (letter == '6') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/like"; }
-            else if (letter == '7') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/dislike"; }
-            else if (letter == '8') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/stop"; }
-            else if (letter == '9') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/stop_inverted"; }
-            else if (letter == '!') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/peace"; }
-            else if (letter == '@') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/peace_inverted"; }
-            else if (letter == '#') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/two_up_inverted"; }
-            else if (letter == '$') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/three2"; }
-            else if (letter == '%') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/call"; }
-            else if (letter == '^') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/fist"; }
-            else if (letter == '&') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/mute"; }
-            else if (letter == '*') { folderPath = Directory.GetCurrentDirectory() + $"/Hagrid/Train/rock"; }
-            if (gestureNum <= maxNum)
-            {
-                //if not, take an image called filename and store in folderPath
-                ScreenCapture.CaptureScreenshot(System.IO.Path.Combine(folderPath, filename));
-            }
-            foreach (int i in hagridCounter)
-            {
-                if (i >= maxNum)
-                {
-                    gesturesDone += 1;          //counting amount of complete gestures
-                }
-            }
-            if (gesturesDone == 18)                 //18 total gestures need to be done (all)
-            {
-                EditorApplication.isPlaying = false;        //stops Unity player
-            }
-        }
-    }
-
     //convertNumToWord is used for naming the output file within the TakeDigitImage coroutine
-    string convertNumToWord(int value)
+    string convertNumToWord(char character)
     {
         //adds possible number strings to a list and chooses which to use based on the index chosen previously
         string GestureWord;
+        int value;
         List<string> possibleWords = new List<string>();
         possibleWords.Add("zero");
         possibleWords.Add("one");
@@ -393,8 +442,16 @@ public class SceneController : MonoBehaviour
         possibleWords.Add("eight");
         possibleWords.Add("nine");
         possibleWords.Add("unknown");
+        if (character != 'u')
+        {
+            value = character - '0';        //if 'u' isnt selected, character '0'->'9' is changed to integer 0->9
+        }
+        else
+        {
+            value = 10;                     //if 'u' is selected, use value 10 as possibleWords[10] is unknown
+        }
         GestureWord = possibleWords[value];
-        return GestureWord;
+        return GestureWord;                     //output word as a string
     }
 
     //IncreaseCount is necessary in PlayAnimation function to count the amount of times each gesture has been played
@@ -433,8 +490,8 @@ public class SceneController : MonoBehaviour
             else if (c == 's') { alphaCounter[26] += 1; }
             else if (c == 'n') { alphaCounter[27] += 1; }
         }
-        //hagrid counter increments on a specific index depending on the chosen (played) animation
-        if (ChooseDataset == 2)
+        //each index of the hagridCounter corresponds to an individual gesture, which is incremented everytime that gesture is played
+        else if (ChooseDataset == 2)
         {
             if (c == '0') { hagridCounter[0] += 1; }
             else if (c == '1') { hagridCounter[1] += 1; }
@@ -454,6 +511,20 @@ public class SceneController : MonoBehaviour
             else if (c == '^') { hagridCounter[15] += 1; }
             else if (c == '&') { hagridCounter[16] += 1; }
             else if (c == '*') { hagridCounter[17] += 1; }
+        }
+        else if (ChooseDataset == 3)
+        {
+            if (c == '1') { HANDsCounter[0] += 1; }
+            else if (c == '2') { HANDsCounter[1] += 1; }
+            else if (c == '3') { HANDsCounter[2] += 1; }
+            else if (c == '4') { HANDsCounter[3] += 1; }
+            else if (c == '5') { HANDsCounter[4] += 1; }
+            else if (c == '6') { HANDsCounter[5] += 1; }
+            else if (c == '7') { HANDsCounter[6] += 1; }
+            else if (c == '8') { HANDsCounter[7] += 1; }
+            else if (c == '9') { HANDsCounter[8] += 1; }
+            else if (c == 'S') { HANDsCounter[9] += 1; }
+            else if (c == 'P') { HANDsCounter[10] += 1; }
         }
     }
 
@@ -494,7 +565,7 @@ public class SceneController : MonoBehaviour
             else if (c == 's') { value = alphaCounter[26]; }
             else if (c == 'n') { value = alphaCounter[27]; }
         }
-        //grabs value from hagrid counter to judge how many iterations a gesture has been through
+        // display amount of times a gesture from the hagrid dataset has played
         else if (ChooseDataset == 2)
         {
             if (c == '0') { value = hagridCounter[0]; }
@@ -516,13 +587,27 @@ public class SceneController : MonoBehaviour
             else if (c == '&') { value = hagridCounter[16]; }
             else if (c == '*') { value = hagridCounter[17]; }
         }
+        else if (ChooseDataset == 3)
+        {
+            if (c == '1') { value = HANDsCounter[0]; }
+            else if (c == '2') { value = HANDsCounter[1]; }
+            else if (c == '3') { value = HANDsCounter[2]; }
+            else if (c == '4') { value = HANDsCounter[3]; }
+            else if (c == '5') { value = HANDsCounter[4]; }
+            else if (c == '6') { value = HANDsCounter[5]; }
+            else if (c == '7') { value = HANDsCounter[6]; }
+            else if (c == '8') { value = HANDsCounter[7]; }
+            else if (c == '9') { value = HANDsCounter[8]; }
+            else if (c == 'S') { value = HANDsCounter[9]; }
+            else if (c == 'P') { value = HANDsCounter[10]; }
+        }
         return value;
     }
 
     //PlaceCamera is required to enable/disable and randomly adjust camera angles for each gesture
     void PlaceCamera(char randChar, int dataset)
     {
-        //begin by disabling all cameras so they do not overlap once one is turned on
+        //begin by disabling all cameras 
         alphabetCam.enabled = false;
         HagridCam.enabled = false;
         rockCam.enabled = false;
@@ -538,6 +623,8 @@ public class SceneController : MonoBehaviour
         SPACECam.enabled = false;
         digitCam.enabled = false;
         XCam.enabled = false;
+        HANDsCam.enabled = false;
+        HANDsv2Cam.enabled = false;
 
         //if ASL for Numbers is being run,
         if (dataset == 0)
@@ -619,11 +706,11 @@ public class SceneController : MonoBehaviour
             else if (randChar == 'X')
             {
                 float x_pos_change = Random.Range(-.25f, .25f);
-                float y_pos_change = Random.Range(-.25f, .25f);         //alterations for alphabetCam
+                float y_pos_change = Random.Range(-.25f, .25f);         //alterations for XCam
                 float z_pos_change = Random.Range(-.25f, .25f);
-                Vector3 startingPos = new Vector3(-12.85f, 14.98f, 111.46f);        //alphabetCam starting position
+                Vector3 startingPos = new Vector3(-12.85f, 14.98f, 111.46f);        //XCam starting position
                 XCam.enabled = true;
-                XCam.transform.localPosition = startingPos;      //alphabetCam location assignment/alteration
+                XCam.transform.localPosition = startingPos;      //XCam location assignment/alteration
                 XCam.transform.localPosition = startingPos + new Vector3(x_pos_change, y_pos_change, z_pos_change);
             }
             //slight alterations for Y since fingers sometimes are cut off screen
@@ -662,6 +749,7 @@ public class SceneController : MonoBehaviour
                 alphabetCam.transform.localPosition = startingPos + new Vector3(x_pos_change, y_pos_change, z_pos_change);
             }
         }
+        //camera placement and randomization for HAGRID dataset, still a WORK IN PROGRESS
         else if (dataset == 2)
         {
             float x_pos_change = Random.Range(-.25f, .25f);
@@ -712,7 +800,7 @@ public class SceneController : MonoBehaviour
             else if ((randChar == '9') | (randChar == '@') | (randChar == '#'))
             {
                 float x_pos_change_inv = Random.Range(-.5f, .25f);
-                float y_pos_change_inv = Random.Range(-.7f, .65f);         //general alterations
+                float y_pos_change_inv = Random.Range(-.7f, .65f);         //specific alterations
                 float z_pos_change_inv = Random.Range(-.8f, .55f);
                 Vector3 startingPos = new Vector3(-14.99f, 18.2f, 107.33f);    //invCam position placement/alteration
                 invCam.enabled = true;
@@ -725,12 +813,22 @@ public class SceneController : MonoBehaviour
                 Vector3 startingPos = new Vector3(-13.26f, 13.93f, 110.23f);
                 if (randChar == '^')
                 {
-                    startingPos = new Vector3(-13.05f, 14.06f, 110.25f);
+                    startingPos = new Vector3(-13.05f, 14.06f, 110.25f);        //change position slightly for fist
                 }
                 HagridCam.enabled = true;
-                HagridCam.transform.localPosition = startingPos;
+                HagridCam.transform.localPosition = startingPos;            //HagridCam position placement/alteration
                 HagridCam.transform.localPosition = startingPos + new Vector3(x_pos_change, y_pos_change, z_pos_change);
             }
+        }
+        else if (dataset == 3)
+        {
+            //float x_pos_change = Random.Range(-.45f, .65f);
+            //float y_pos_change = Random.Range(-.85f, .85f);         //general alterations
+            //float z_pos_change = Random.Range(-.05f, .15f);
+            //Vector3 startingPos = new Vector3(-12.4f, 13.7f, 111.9f);        //HANDsCam position placement/alteration
+            HANDsv2Cam.enabled = true;
+            //HANDsv2Cam.transform.localPosition = startingPos;
+            //HANDsCam.transform.localPosition = startingPos + new Vector3(x_pos_change, y_pos_change, z_pos_change);
         }
     }
 }
