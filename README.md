@@ -2,9 +2,9 @@
 
 Gestures and Unity
 
-Code and animation clips as of 11/15/2022
+Code and animation clips as of 4/26/2023
 
-Includes complete functionality for digits and alphabet dataset.
+Includes complete functionality for digits, alphabet, and HANDSv2 dataset.
 
 # INSTRUCTIONS FOR USE OF DATASET GENERATION TOOL:
 First, you will need to create a 3D Unity Project. We have tested this project using Unity versions 2021.3.9f1 and 2021.3.8f1
