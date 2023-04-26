@@ -4,6 +4,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEditor.Animations;
+using System.Diagnostics;
 //using Unity.VisualScripting;
 
 public class AutomateMove : MonoBehaviour
@@ -174,6 +175,11 @@ public class AutomateMove : MonoBehaviour
                 {
                     EditorApplication.isPlaying = false;
                     Debug.Log("Invalid Number of DistanceTest Points selection. Please provide a number above 0.");
+                }
+                if (startDistance <= 15)
+                {
+                    EditorApplication.isPlaying = false;
+                    Debug.Log("Please provide a start distance further away from the model.");
                 }
                 iteration = 0;
                 spawnX = 0;
