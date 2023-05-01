@@ -18,13 +18,13 @@ public class OpenCloseGripper : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown("o"))
-        {
-            OpenCloseAnimator.SetTrigger("open");
-        }
         if (Input.GetKeyDown("p"))
         {
-            OpenCloseAnimator.SetTrigger("close");
+            OpenCloseAnimator.SetFloat("speed",1);
+        }
+        if (Input.GetKeyDown("o"))
+        {
+            OpenCloseAnimator.SetFloat("speed", -1);
         }
     }
 }

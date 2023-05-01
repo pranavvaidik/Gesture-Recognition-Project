@@ -3,7 +3,42 @@ guid: 4fbd5473cec81154ca89506569ff6d25
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: afro01
+    second: {fileID: 2100000, guid: eba9beefe85d3ec4a98221ad5e8b3b1b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: eyebrow002
+    second: {fileID: 2100000, guid: e3f0d39109cef2049a5565b5e19df4d0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: eyelashes01
+    second: {fileID: 2100000, guid: af5bd826b557cf7419dafe665dd787d3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: high-poly
+    second: {fileID: 2100000, guid: 001307634da659548917bfb6dfdbad7f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: male_casualsuit04
+    second: {fileID: 2100000, guid: fddfec5903864d842af198d4130f5503, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: mass0001
+    second: {fileID: 2100000, guid: 36412551dbcc8a3459ab829b5f63027b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: shoes03
+    second: {fileID: 2100000, guid: 0557428122348a8498d6561667b92253, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
