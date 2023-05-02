@@ -1,49 +1,12 @@
 fileFormatVersion: 2
-guid: 78036b0bf6f490f49bc2473753e7f8c8
+guid: 44ce1afef8b327a498ae1839054fbfd0
 ModelImporter:
   serializedVersion: 20200
-  internalIDToNameTable: []
-  externalObjects:
+  internalIDToNameTable:
   - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: bob01
-    second: {fileID: 2100000, guid: dce80d8bf978254459f082f6dc6795cb, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: eyebrow011
-    second: {fileID: 2100000, guid: 9ea7c03e035b2d447b6a707845053809, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: eyelashes03
-    second: {fileID: 2100000, guid: 0ce3f7de82d15fa4e9ad4a5c8c3188ec, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: female_sportsuit01
-    second: {fileID: 2100000, guid: ab08d7a35af45f34895f0455b6c46476, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: high-poly
-    second: {fileID: 2100000, guid: d6d57c1a5ae37fd43bc472fc1a899e3a, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: longfingernails_bluebutterfly
-    second: {fileID: 2100000, guid: 05546ae8bf3aa6143bc11d408d57d5aa, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: mass0002
-    second: {fileID: 2100000, guid: db638856494683f4eaa934a651aefef8, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: shoes05
-    second: {fileID: 2100000, guid: 0b4310fe25c91d24186878e8fa574d96, type: 2}
+      74: -7996902174933517031
+    second: Armature|OpenClose
+  externalObjects: {}
   materials:
     materialImportMode: 2
     materialName: 0
