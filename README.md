@@ -93,6 +93,7 @@ SETTING UP ENVIRONMENT/VERIFYING ALL NECESSARY COMPONENTS
   - All models are human model prefabs which contain all of the following components upon spawn: Animator, RigidBody, and Capsule Collider
 
 HOW TO USE AUTOMATE MOVE SCRIPT
+- Open the scene named "AutomateCharacter" from the Assets/Scenes folder
 - Navigate to the HumanController Object in the Hierarchy and observe the Automate Move script attached to it in the Inspector panel. We will cover now what each parameter is responsible for.
 1. Human Models parameter stores all PrefabModels to be randomly spawned into the scene upon run. This is automatically done in the AutomateMove script. You do not need to change this variable manually at all.
 2. Behavior Chains can be created automatically or manually depending on whether or not TestMode and ManualSpawnTest are enabled.
